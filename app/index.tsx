@@ -1,33 +1,30 @@
+import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, Pressable } from "react-native";
 import Button from "../components/button";
 import { constantStyles, welcome_message } from "../components/constants";
 import { useRouter } from "expo-router";
-import Counter from "../components/counter";
+import Login from "../components/login";
+import Welcome from "../components/welcome";
+import ApiCallSample from "../components/api_call_sample";
 
 export default function App() {
-  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
 
-  const handleRoutingPress = (route: string) => {
-    router.push(`/${route}`);
-  };
   return (
     <View style={constantStyles.container}>
-      <Text>{welcome_message}</Text>
-      <Button
-        title="Settings"
-        color="#EE4B2B"
-        onPress={() => handleRoutingPress("settings")}
-      />
-      <Button
-        title="interesting facts"
-        onPress={() => handleRoutingPress("interesting_facts")}
-      />
-      <Button title="Tabs" onPress={() => handleRoutingPress("(tabs)")} />
-
-      {/* <Counter /> */}
-
-      <StatusBar style="auto" />
+      {isLoggedIn && (
+        <Pressable
+          style={constantStyles.button}
+          onPress={() => setIsLoggedIn(!isLoggedIn)}
+        >
+          <Text style={{ color: "white", fontSize: 16, fontWeight: "bold" }}>
+            {isLoggedIn ? "Logout" : "Login"}
+          </Text>
+        </Pressable>
+      )}
+      {/* {isLoggedIn ? <Welcome /> : <Login setIsLoggedIn={setIsLoggedIn} />} */}
+      {isLoggedIn ? <ApiCallSample /> : <Login setIsLoggedIn={setIsLoggedIn} />}
     </View>
   );
 }
