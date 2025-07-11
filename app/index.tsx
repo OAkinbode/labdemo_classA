@@ -7,6 +7,7 @@ import { useRouter } from "expo-router";
 import Login from "../components/login";
 import Welcome from "../components/welcome";
 import ApiCallSample from "../components/api_call_sample";
+import DatabaseCrud from "../components/database_crud";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
@@ -24,7 +25,7 @@ export default function App() {
         </Pressable>
       )}
       {/* {isLoggedIn ? <Welcome /> : <Login setIsLoggedIn={setIsLoggedIn} />} */}
-      {isLoggedIn ? <ApiCallSample /> : <Login setIsLoggedIn={setIsLoggedIn} />}
+      {isLoggedIn ? <DatabaseCrud /> : <Login setIsLoggedIn={setIsLoggedIn} />}
     </View>
   );
 }
