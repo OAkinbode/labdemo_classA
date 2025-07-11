@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  TouchableOpacity,
 } from "react-native";
 import {
   getAllItems,
@@ -18,6 +19,9 @@ import {
 } from "../lib/supabase_crud";
 import { Inventory } from "../lib/object_types";
 import { id } from "date-fns/locale";
+import { signOut, getSession } from "../lib/supabase_auth";
+import { useRouter } from "expo-router";
+import { set } from "date-fns";
 
 // Define TypeScript interface for inventory item
 
@@ -30,10 +34,31 @@ export default function DatabaseCrud() {
     description: "",
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  const router = useRouter();
 
   useEffect(() => {
     fetchItems();
+    getCurrentSession();
   }, []);
+
+  const getCurrentSession = async () => {
+    try {
+      const session = await getSession();
+
+      // console.log("Current session:", session);
+      setUser(session?.user.email || null);
+      if (!session) {
+        Alert.alert("Session expired", "Please sign in again.");
+        router.push("/sign_in");
+      }
+    } catch (error) {
+      console.error("Error fetching session:", error);
+      Alert.alert("Error", "Failed to fetch session. Please sign in again.");
+      // await signOut();
+    }
+  };
 
   const fetchItems = async () => {
     try {
@@ -45,6 +70,17 @@ export default function DatabaseCrud() {
       Alert.alert("Error", "Failed to load inventory items");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      setUser(null);
+      router.push("/sign_in");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      Alert.alert("Error", "Failed to sign out");
     }
   };
 
@@ -102,6 +138,14 @@ export default function DatabaseCrud() {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        onPress={() => {
+          handleSignOut();
+        }}
+        style={{ marginBottom: 10 }}
+      >
+        <Text style={{ color: "blue", textAlign: "right" }}>Sign Out</Text>
+      </TouchableOpacity>
       <Text style={styles.header}>Inventory Management</Text>
 
       <View style={styles.form}>
